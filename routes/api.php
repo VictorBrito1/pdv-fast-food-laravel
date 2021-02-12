@@ -10,8 +10,8 @@ Route::group(['prefix' => 'orders'], function () {
     Route::put('/{id}/change-status', [OrderController::class, 'changeStatus']);
     Route::post('/{id}/finish', [OrderController::class, 'finish']);
 
-    Route::post('/products/{productId}', [OrderController::class, 'addProduct']);
-    Route::post('/{orderId}/products/{productId}', [OrderController::class, 'addProduct']);
+    Route::post('/products/{productId}', [OrderController::class, 'addProductWithoutOrder']);
+    Route::post('/{orderId}/products/{productId}', [OrderController::class, 'addProductWithOrder']);
     Route::delete('/{orderId}/products/{productId}', [OrderController::class, 'removeProduct']);
 });
 
