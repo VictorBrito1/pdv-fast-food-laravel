@@ -11,8 +11,8 @@ Route::group(['prefix' => 'orders'], function () {
     Route::post('/{id}/finish', [OrderController::class, 'finish']);
 
     Route::post('/products/{productId}', [OrderController::class, 'addProduct']);
-    Route::post('/{idOrder}/products/{productId}', [OrderController::class, 'addProduct']);
-    Route::delete('/{idOrder}/products/{productId}', [OrderController::class, 'removeProduct']);
+    Route::post('/{orderId}/products/{productId}', [OrderController::class, 'addProduct']);
+    Route::delete('/{orderId}/products/{productId}', [OrderController::class, 'removeProduct']);
 });
 
 Route::group(['prefix' => 'products'], function () {
