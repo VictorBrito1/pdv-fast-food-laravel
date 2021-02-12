@@ -49,9 +49,6 @@ class ProductService
             'name' => ['string', 'required_without:code'],
         ])->validate();
 
-        $field = isset($data['code']) ? 'id' : 'name';
-        $value = reset($data);
-
-        return $this->productRepository->searchByField($field, $value);
+        return $this->productRepository->findByIdOrName($data);
     }
 }

@@ -12,12 +12,21 @@ use App\Models\Product;
 class ProductRepository
 {
     /**
-     * @param $field
-     * @param $value
+     * @param $data | $id or $name
      * @return mixed
      */
-    public function searchByField($field, $value)
+    public function findByIdOrName($data)
     {
-        return Product::where($field, 'like', "%$value%")->get();
+        $query = Product::query();
+
+        if (isset($data['code'])) {
+            $query->orWhere('id', '=', $data['code']);
+        }
+
+        if (isset($data['name'])) {
+            $query->orWhere('name', 'like', "%{$data['name']}%");
+        }
+
+        return $query->get();
     }
 }
