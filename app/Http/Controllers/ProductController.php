@@ -31,7 +31,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return response()->json(['products' => $this->productService->getAll()]);
+        return response()->json($this->productService->getAll());
     }
 
     /**
@@ -43,6 +43,6 @@ class ProductController extends Controller
     {
         $data = $request->only(['code', 'name']);
 
-        return response()->json(['products' => $this->productService->search($data)]);
+        return response()->json($this->productService->search($data));
     }
 }
