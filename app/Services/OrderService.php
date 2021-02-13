@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Repositories\OrderRepository;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * OrderService
@@ -50,9 +51,7 @@ class OrderService
             $order->products()->attach($product, ['amount' => $amount]);
         }
 
-        $order->products;
-
-        return $order;
+        return $this->loadProductsInOrder($order);
     }
 
     /**
@@ -79,9 +78,7 @@ class OrderService
             }
         }
 
-        $order->products;
-
-        return $order;
+        return $this->loadProductsInOrder($order);
     }
 
     /**
@@ -98,6 +95,33 @@ class OrderService
         ])->validate();
 
         return $this->orderRepository->getOrders($status);
+    }
+
+    /**
+     * @param $id
+     * @return mixed
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function show($id)
+    {
+        $order = Order::find($id);
+
+        if (!$order) {
+            throw new NotFoundHttpException(null, null, 0, ['errors' => ['id' => ['Order not found.']]]);
+        }
+
+        return $this->loadProductsInOrder($order);
+    }
+
+    /**
+     * @param $order
+     * @return mixed
+     */
+    private function loadProductsInOrder($order)
+    {
+        $order->products;
+
+        return $order;
     }
 
     /**

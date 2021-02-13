@@ -40,9 +40,16 @@ class OrderController extends Controller
         return response()->json($this->orderService->getOrders($status));
     }
 
-    public function show(Request $request)
+    /**
+     * Shows order details
+     *
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function show($id)
     {
-
+        return response()->json($this->orderService->show($id));
     }
 
     public function changeStatus(Request $request)
