@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\OrderStatusType;
+use App\Enums\PaymentTypeType;
 use App\Models\Order;
 use App\Models\Product;
 use App\Repositories\OrderRepository;
@@ -109,6 +110,49 @@ class OrderService
         if (!$order) {
             throw new NotFoundHttpException(null, null, 0, ['errors' => ['id' => ['Order not found.']]]);
         }
+
+        return $this->loadProductsInOrder($order);
+    }
+
+    /**
+     * @param $id
+     * @param $data
+     * @return mixed
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function finishOrder($id, $data)
+    {
+        $order = Order::find($id);
+
+        if (!$order) {
+            throw new NotFoundHttpException(null, null, 0, ['errors' => ['id' => ['Order not found.']]]);
+        }
+
+        $paymentTypesString = PaymentTypeType::getValuesAsStringWithComma();
+        $orderPrice = $order->price;
+        $data['order_price'] = $orderPrice;
+
+        Validator::make($data, [
+            'client_name' => 'string|required',
+            'payment_type' => "string|required|in:{$paymentTypesString}",
+            'total_paid' => 'numeric|required|gte:order_price',
+        ])->validate();
+
+        $total_paid = $data['total_paid'];
+        $payment_type = $data['payment_type'];
+        $change = 0;
+
+        //Calculates the change if the payment was in cash and greater than the order amount.
+        if ($payment_type === PaymentTypeType::CASH && $total_paid > $orderPrice) {
+            $change = $total_paid - $orderPrice;
+        }
+
+        $order->status = OrderStatusType::SENT_TO_THE_KITCHEN;
+        $order->payment_type = $payment_type;
+        $order->client_name = $data['client_name'];
+        $order->total_paid = $total_paid;
+        $order->change = $change;
+        $order->save();
 
         return $this->loadProductsInOrder($order);
     }

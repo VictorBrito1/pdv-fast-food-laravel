@@ -57,9 +57,19 @@ class OrderController extends Controller
 
     }
 
-    public function finish(Request $request)
+    /**
+     * Finalizes an order and sends it to the kitchen
+     *
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function finish(Request $request, $id)
     {
+        $data = $request->only(['client_name', 'payment_type', 'total_paid']);
 
+        return response()->json($this->orderService->finishOrder($id, $data));
     }
 
     /**
