@@ -18,7 +18,7 @@ class OrderService
      * @param $productId
      * @param $amount
      * @param null $orderId
-     * @return mixed
+     * @return Order
      * @throws \Illuminate\Validation\ValidationException
      */
     public function addProduct($productId, $amount, $orderId = null)
@@ -26,7 +26,45 @@ class OrderService
         $order = $this->validateAndGetUpdatedOrder($productId, $amount, $orderId);
 
         $product = Product::find($productId);
-        $order->products()->attach($product, ['amount' => $amount]);
+        $existingProduct = $order->products()->find($product);
+
+        if ($existingProduct) { //If already have the product in the order, just increase the quantity
+            $amount = $existingProduct->pivot->amount + $amount;
+            $order->products()->updateExistingPivot($product, ['amount' => $amount]);
+        } else {
+            $order->products()->attach($product, ['amount' => $amount]);
+        }
+
+        $order->products;
+
+        return $order;
+    }
+
+    /**
+     * @param $productId
+     * @param $orderId
+     * @param $amount
+     * @return Order
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function removeProduct($productId, $orderId, $amount)
+    {
+        $order = $this->validateAndGetUpdatedOrder($productId, $amount, $orderId, false);
+
+        $product = Product::find($productId);
+        $existingProduct = $order->products()->find($product);
+
+        if ($existingProduct) {
+            $existingAmount = $existingProduct->pivot->amount;
+
+            if ($existingAmount > $amount) { //If the quantity sent is greater than the current quantity, it only decreases
+                $order->products()->updateExistingPivot($product, ['amount' => $existingAmount - $amount]);
+            } else { //Remove the product from the order
+                $order->products()->detach($product);
+            }
+        }
+
+        $order->products;
 
         return $order;
     }
@@ -83,10 +121,19 @@ class OrderService
 
         if ($add) {
             $orderPrice += $price;
-        } elseif ($orderPrice > 0) {
-            $orderPrice -= $price;
+        } else {
+            $existingProduct = $order->products()->find($product);
+
+            if ($existingProduct) {
+                $currentAmount = $existingProduct->pivot->amount;
+
+                //If the quantity sent is greater than the existing quantity, the price will be decreased from the current amount.
+                $orderPrice = $amount > $currentAmount
+                    ? $orderPrice - ($product->price * $currentAmount)
+                    : $orderPrice - $price;
+            }
         }
 
-        return $orderPrice > 0 ? $orderPrice : 0;
+        return $orderPrice > 0 ? $orderPrice : 0; //To not return a negative value
     }
 }

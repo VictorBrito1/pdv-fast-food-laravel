@@ -72,4 +72,18 @@ class OrderController extends Controller
 
         return response()->json($this->orderService->addProduct($productId, $amount, $orderId));
     }
+
+    /**
+     * @param Request $request
+     * @param $orderId
+     * @param $productId
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function removeProduct(Request $request, $orderId, $productId)
+    {
+        $amount = $request->get('amount', 1);
+
+        return response()->json($this->orderService->removeProduct($productId, $orderId, $amount));
+    }
 }
