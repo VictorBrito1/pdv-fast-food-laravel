@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\OrderStatusType;
 use App\Models\Order;
 use App\Models\Product;
+use App\Repositories\OrderRepository;
 use Illuminate\Support\Facades\Validator;
 
 /**
@@ -14,6 +15,20 @@ use Illuminate\Support\Facades\Validator;
  */
 class OrderService
 {
+    /**
+     * @var OrderRepository
+     */
+    private $orderRepository;
+
+    /**
+     * OrderService constructor.
+     * @param OrderRepository $orderRepository
+     */
+    public function __construct(OrderRepository $orderRepository)
+    {
+        $this->orderRepository = $orderRepository;
+    }
+
     /**
      * @param $productId
      * @param $amount
@@ -67,6 +82,22 @@ class OrderService
         $order->products;
 
         return $order;
+    }
+
+    /**
+     * @param string $status
+     * @return mixed
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function getOrders($status = '')
+    {
+        $statusString = OrderStatusType::getValuesAsStringWithComma();
+
+        Validator::make(['status' => $status], [
+            'status' => "string|in:{$statusString}"
+        ])->validate();
+
+        return $this->orderRepository->getOrders($status);
     }
 
     /**

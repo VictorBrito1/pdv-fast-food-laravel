@@ -26,9 +26,18 @@ class OrderController extends Controller
         $this->orderService = $orderService;
     }
 
+    /**
+     * List of orders with or without status
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function index(Request $request)
     {
+        $status = $request->get('status', '');
 
+        return response()->json($this->orderService->getOrders($status));
     }
 
     public function show(Request $request)
@@ -47,6 +56,8 @@ class OrderController extends Controller
     }
 
     /**
+     * Add a product to a new order
+     *
      * @param Request $request
      * @param $productId
      * @return \Illuminate\Http\JsonResponse
@@ -60,6 +71,8 @@ class OrderController extends Controller
     }
 
     /**
+     * Add a product to an existing order
+     *
      * @param Request $request
      * @param $orderId
      * @param $productId
@@ -74,6 +87,8 @@ class OrderController extends Controller
     }
 
     /**
+     * Removes a product from an order
+     *
      * @param Request $request
      * @param $orderId
      * @param $productId
