@@ -75,7 +75,7 @@ class OrderController extends Controller
      */
     public function finish(Request $request, $id)
     {
-        $data = $request->only(['client_name', 'payment_type', 'total_paid']);
+        $data = $request->only(['client_name', 'payment_type', 'total_paid', 'note']);
 
         return response()->json($this->orderService->finishOrder($id, $data));
     }

@@ -127,6 +127,7 @@ class OrderService
             'client_name' => 'string|required',
             'payment_type' => "string|required|in:{$paymentTypesString}",
             'total_paid' => 'numeric|required|gte:order_price',
+            'note' => 'string',
         ])->validate();
 
         $total_paid = $data['total_paid'];
@@ -143,6 +144,7 @@ class OrderService
         $order->client_name = $data['client_name'];
         $order->total_paid = $total_paid;
         $order->change = $change;
+        $order->note = $data['note'] ?? null;
         $order->save();
 
         return $this->loadProductsInOrder($order);

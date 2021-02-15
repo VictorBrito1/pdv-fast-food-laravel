@@ -13,6 +13,15 @@ class Order extends Model
 {
     protected $table = 'orders';
 
+    protected $attributes = [
+        'change' => 0,
+        'total_paid' => 0,
+        'price' => 0,
+        'note' => null,
+        'payment_type' => null,
+        'client_name' => null,
+    ];
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
