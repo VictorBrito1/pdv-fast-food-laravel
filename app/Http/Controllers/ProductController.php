@@ -41,8 +41,6 @@ class ProductController extends Controller
      */
     public function search(Request $request)
     {
-        $data = $request->only(['code', 'name']);
-
-        return response()->json($this->productService->search($data));
+        return response()->json($this->productService->search($request->get('text', '')));
     }
 }

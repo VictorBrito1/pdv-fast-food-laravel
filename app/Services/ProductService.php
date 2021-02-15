@@ -38,17 +38,16 @@ class ProductService
     /**
      * Search products by id or name
      *
-     * @param $data | code or name (at least one is required)
+     * @param $text
      * @return mixed
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function search($data)
+    public function search($text)
     {
-        Validator::make($data, [
-            'code' => ['integer', 'required_without:name'],
-            'name' => ['string', 'required_without:code'],
+        Validator::make(['text' => $text], [
+            'text' => 'required',
         ])->validate();
 
-        return $this->productRepository->findByIdOrName($data);
+        return $this->productRepository->findByIdOrName($text);
     }
 }
