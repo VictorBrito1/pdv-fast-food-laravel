@@ -8,7 +8,6 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Repositories\OrderRepository;
 use Illuminate\Support\Facades\Validator;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * OrderService
@@ -105,11 +104,7 @@ class OrderService
      */
     public function show($id)
     {
-        $order = Order::find($id);
-
-        if (!$order) {
-            throw new NotFoundHttpException(null, null, 0, ['errors' => ['id' => ['Order not found.']]]);
-        }
+        $order = $this->orderRepository->find($id);
 
         return $this->loadProductsInOrder($order);
     }
@@ -122,11 +117,7 @@ class OrderService
      */
     public function finishOrder($id, $data)
     {
-        $order = Order::find($id);
-
-        if (!$order) {
-            throw new NotFoundHttpException(null, null, 0, ['errors' => ['id' => ['Order not found.']]]);
-        }
+        $order = $this->orderRepository->find($id);
 
         $paymentTypesString = PaymentTypeType::getValuesAsStringWithComma();
         $orderPrice = $order->price;
@@ -152,6 +143,27 @@ class OrderService
         $order->client_name = $data['client_name'];
         $order->total_paid = $total_paid;
         $order->change = $change;
+        $order->save();
+
+        return $this->loadProductsInOrder($order);
+    }
+
+    /**
+     * @param $id
+     * @param null $status
+     * @return mixed
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function changeStatus($id, $status = null)
+    {
+        $order = $this->orderRepository->find($id);
+        $statusString = OrderStatusType::getValuesAsStringWithComma();
+
+        Validator::make(['status' => $status], [
+            'status' => "required|string|in:$statusString",
+        ])->validate();
+
+        $order->status = $status;
         $order->save();
 
         return $this->loadProductsInOrder($order);

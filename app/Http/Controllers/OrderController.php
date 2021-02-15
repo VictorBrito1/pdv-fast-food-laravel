@@ -52,9 +52,17 @@ class OrderController extends Controller
         return response()->json($this->orderService->show($id));
     }
 
-    public function changeStatus(Request $request)
+    /**
+     * Changes order status (example: kitchen changes status to ready)
+     *
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function changeStatus(Request $request, $id)
     {
-
+        return response()->json($this->orderService->changeStatus($id, $request->get('status', '')));
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Order;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * OrderRepository
@@ -24,5 +25,20 @@ class OrderRepository
         }
 
         return $query->orderBy('created_at', 'asc')->get();
+    }
+
+    /**
+     * @param $id
+     * @return mixed
+     */
+    public function find($id)
+    {
+        $order = Order::find($id);
+
+        if (!$order) {
+            throw new NotFoundHttpException(null, null, 0, ['errors' => ['id' => ['Order not found.']]]);
+        }
+
+        return $order;
     }
 }
