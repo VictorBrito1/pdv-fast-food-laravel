@@ -1,16 +1,16 @@
-##Descrição
+## Descrição
 Um restaurante precisa registrar suas vendas de forma fácil e rápida. São utilizadas
 comandas para anotar os pedidos de seus clientes. O restaurante gostaria de ter um
 ambiente intuitivo, listando os produtos mais vendidos e facilitando a inserção dos
 mesmos em um checkout.
 
-##Configuração
+## Configuração
 * Duplique o arquivo ".env.example" para o arquivo .env e coloque as configurações do banco de dados.
 * Rode o comando "php artisan migrate --seed" para criar as tabelas e inserir alguns produtos.
 * Rode o comando "composer install" para instalar as dependências.
 * Rode o comando "php artisan serve" para iniciar o servidor.
 
-##Fluxo para consumo da API
+## Fluxo para consumo da API
 1. Para listar os produtos: GET -> /products.
 2. Para buscar produtos pelo id ou nome: GET -> /products/search passando o parâmetro "text".
 3. O cliente poderá adicionar um produto ao pedido de duas formas (ambas recebem a quantidade do produto através do parâmetro "amount"):  
